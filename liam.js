@@ -4,7 +4,7 @@
         // content of index.js
 
         let mqtt = require('mqtt');
-        const server_port = 8081;
+        const server_port = 8000;
         let voltAvg=[];
         let arrayLen = 50;
         // Web
@@ -44,7 +44,7 @@
             /**
              * 'mqttjs_' + Math.random().toString(16).substr(2, 8)
              */
-            clientId: "liam.js",
+            clientId: "Liam_"+Date.now(),
             /**
              * 'MQTT'
              */
@@ -68,7 +68,7 @@
             /**
              * the username required by your broker, if any
              */
-            username: "liam.js",
+            username: "liam_"+Date.now(),
             /**
              * the password required by your broker, if any
              */
@@ -140,43 +140,47 @@
         mqttclient.on('message', (topic, message) =>
         {
             console.dir(message.toString('utf8'));
-            switch (topic) {
+            try {
+                switch (topic) {
 
-                case "/liam1/event":
-                    let JMessage = JSON.parse(message);
-                    if(voltAvg.length >= arrayLen )
-                    {
-                        voltAvg.shift();
+                    case "/liam1/event":
+                        let JMessage = JSON.parse(message);
+                        if(voltAvg.length >= arrayLen )
+                        {
+                            voltAvg.shift();
+                        }
+
+                        voltAvg.push(JMessage.SOC)
+                        let n = 0;
+                        let v = 0;
+                        let current=0;
+                        mower.V_min=10000;
+                        mower.V_max=0;
+                        for (let index = 0; index < voltAvg.length; index++) {
+                            current = voltAvg[index];
+                            v+= current
+                            n++;
+                            if(mower.v_min>current)
+                                mower.v_min = current;
+                            if(mower.v_max<current)
+                                mower.v_max = current;
+                        }
+                        let temp = JSON.stringify(mower);
+                        mower.avgvolt = (Math.floor(v / n) / 100);
+                        mower.looptime = JMessage.Looptime;
+                        mower.state = JMessage.State;
+                        mower["avg_len"] =  n;
+
+                        if (temp != JSON.stringify(mower))
+                            io.emit('battery_avg', mower);
+                        break;
+                    default:
+                        break;
+
                     }
-
-                    voltAvg.push(JMessage.SOC)
-                    let n = 0;
-                    let v = 0;
-                    let current=0;
-                    mower.V_min=10000;
-                    mower.V_max=0;
-                    for (let index = 0; index < voltAvg.length; index++) {
-                        current = voltAvg[index];
-                        v+= current
-                        n++;
-                        if(mower.v_min>current)
-                            mower.v_min = current;
-                        if(mower.v_max<current)
-                            mower.v_max = current;
-                    }
-                    let temp = JSON.stringify(mower);
-                    mower.avgvolt = (Math.floor(v / n) / 100);
-                    mower.looptime = JMessage.Looptime;
-                    mower.state = JMessage.State;
-                    mower["avg_len"] =  n;
-
-                    if (temp != JSON.stringify(mower))
-                        io.emit('battery_avg', mower);
-                    break;
-                default:
-                    break;
-
-                }
+            } catch (error) {
+                console.log("ERROR "+ error);
+            }
         });
 
         //#endregion
@@ -208,7 +212,7 @@
 
 
 
-        app.get('/ccm', function (req, res, next)
+        app.get('/Liam', function (req, res, next)
     {
         console.log("=========================");
         res.sendFile(__dirname + '/public/html/index.html');
