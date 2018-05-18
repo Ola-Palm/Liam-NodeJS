@@ -6,7 +6,7 @@
         let mqtt = require('mqtt');
         const server_port = 8000;
         let voltAvg=[];
-        let arrayLen = 50;
+        let arrayLen = 100;
         // Web
         var express = require('express');
         var app = express();
