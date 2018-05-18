@@ -1,0 +1,12 @@
+{
+  "name": "LIAM-JS",
+  "version": "1.0.0",
+  "main": "liam.js",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3",
+    "http": "^0.0.0",
+    "mqtt": "^2.18.0",
+    "socket.io": "^2.1.0"
+  }
+}
