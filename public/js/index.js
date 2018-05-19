@@ -5,6 +5,10 @@
     window.onload = function () {
         this.console.log("laddat");
 
+        const button = document.getElementById('mower_State_action_button');
+        button.addEventListener('click', function(e) {
+          // push data to server. server komunicate with liam.
+        });
     }; // End window.onload
 
     socket.on("connect", function (data) {
@@ -20,5 +24,8 @@
         node.innerHTML = "State is " + data.state;
         node = document.getElementById("battery_soc_avg");
         node.innerHTML = "Volt Diff :" +(data.v_max - data.v_min)/100 + " / Min: " +data.v_min/100 +"V  / Max :"+ data.v_max/100 +"V";
+        node = document.getElementById("mower_State_action_button");
+
     });
+
 })()

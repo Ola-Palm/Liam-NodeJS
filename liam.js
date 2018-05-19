@@ -211,8 +211,13 @@
         app.use(express.static(__dirname + '/node_modules'));
 
 
+        app.get('/*', function (req, res, next)
+    {
+        console.log("=========================");
+        res.sendFile(__dirname + '/public/html/index.html');
+    });
 
-        app.get('/Liam', function (req, res, next)
+        app.get('/liam', function (req, res, next)
     {
         console.log("=========================");
         res.sendFile(__dirname + '/public/html/index.html');
