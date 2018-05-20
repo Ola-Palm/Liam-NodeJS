@@ -20,9 +20,9 @@
         'avgvolt': 0,
         'v_min': 10000,
         'v_max': 0,
-        'state': 0,
+        'state': -1,
         'avg_len': 0,
-        'charge_starttime' : -1
+        'state_starttime' : -1
     }
 
     // Server
@@ -143,19 +143,34 @@
                 case "/liam1/event":
 
                     let JMessage = JSON.parse(message);
-                    if(JMessage.State == 3)
-                    {
-                        /// Chargeing
-                        if(mower.state != JMessage.State)
-                        {
-                            var d = new Date();
-                            voltAvg.length=0; // set array to zero 
-                        mower.charge_starttime = d.toLocaleTimeString();
+                    if (mower.state != JMessage.State) {
+                        var d = new Date();
+                        voltAvg.length = 0; // set array to zero 
+                        mower.state_starttime = d.toLocaleTimeString();
                     }
-                        mower.state = JMessage.State;
-                        
-                        
-
+                    if(JMessage.State === 0)
+                    {
+                        /// Mowing
+                    }
+                    else if (JMessage.State === 1)
+                    {
+                        //Launching
+                    }
+                    else if( JMessage.State === 2)
+                    {
+                        //// Docking
+                    }
+                    else if (JMessage.State === 3) {
+                        /// Chargeing
+                        /**
+                         * Check charge time at least 30 min
+                         * check diff between min and max no more then .5 V
+                         * If true check if it's mowingtime, --> set mowing. 
+                         */
+                    }
+                    else if( JMessage.State === 4)
+                    {
+                        //// IDLE
                     }
                     if (voltAvg.length >= arrayLen) {
                         voltAvg.shift();
