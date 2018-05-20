@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . .
 RUN apk update
 RUN apk add nodejs
-
+COPY /etc/localtime /etc/localtime
 # If you have native dependencies, you'll need extra tools
 # RUN apk add --no-cache make gcc g++ python
 
