@@ -1,0 +1,11 @@
+version: '2'
+services:
+  gui:
+    build: .
+    ports:
+     - "8000:8000"
+  broker:
+    image: "liam_mqtt_broker:latest"
+    command: mosquitto
+    ports:
+      - "1883:1883"
