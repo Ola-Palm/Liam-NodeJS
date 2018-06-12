@@ -80,6 +80,8 @@
     });
 
     socket.on("GUI_Message", function (data) {
+        console.log("info som kommer hit ==");
+        console.dir(data);
         let node = document.getElementById('control_message');
         node.innerHTML = data.Message;
     });// GUI_Message

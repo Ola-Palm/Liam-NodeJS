@@ -143,6 +143,8 @@
         try {
             if(topic == "/liam/1/event")
             {
+                cosnole.log("emiiting to gui.");
+                cosnole.dir(message);
                 let temp={
                     Message:message
                 }
