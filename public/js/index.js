@@ -78,6 +78,12 @@
 
         }
     });
+
+    socket.on("GUI_Message", function (data) {
+        let node = document.getElementById('control_message');
+        node.innerHTML = data.Message;
+    });// GUI_Message
+
     socket.on("battery_avg", function (data) {
         console.dir(data);
         // localMower.state = data.state;

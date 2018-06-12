@@ -22,8 +22,9 @@
         'v_max': 0,
         'state': -1,
         'avg_len': 0,
-        'state_starttime' : -1
-    }
+        'state_starttime' : -1,
+        'Message':''
+    };
 
     // Server
     var server = http.createServer(app);
@@ -120,15 +121,15 @@
     mqttclient = mqtt.connect(mqttopts);
 
     mqttclient.on('error', (error) => {
-        console.log("# MQTT Baresip ERROR");
+        console.log("# MQTT LIAM ERROR");
     });
 
     mqttclient.on('offline', (error) => {
-        console.log("# MQTT Baresip host offline");
+        console.log("# MQTT LIAM host offline");
     });
 
     mqttclient.on('close', (error) => {
-        console.log("# MQTT Baresip connection closed");
+        console.log("# MQTT LIAM connection closed");
     });
 
     mqttclient.on('connect', () => {
@@ -138,14 +139,22 @@
     });
 
     mqttclient.on('message', (topic, message) => {
+
         try {
+            if(topic == "/liam/1/event")
+            {
+                let temp={
+                    Message:message
+                }
+                client.emit('GUI_Message',temp);
+            }
+            console.dir(message.toString());
             switch (topic) {
                 case "/liam1/event":
-
                     let JMessage = JSON.parse(message);
                     if (mower.state != JMessage.State) {
                         var d = new Date();
-                        voltAvg.length = 0; // set array to zero 
+                        voltAvg.length = 0; // set array to zero
                         mower.state_starttime = d.toLocaleTimeString();
                     }
                     if(JMessage.State === 0)
@@ -163,9 +172,9 @@
                     else if (JMessage.State === 3) {
                         /// Chargeing
                         /**
-                         * Check charge time at least 30 min
+                         * Check charge time at least 90 min
                          * check diff between min and max no more then .5 V
-                         * If true check if it's mowingtime, --> set mowing. 
+                         * If true check if it's mowingtime, --> set mowing.
                          */
                     }
                     else if( JMessage.State === 4)
@@ -205,7 +214,7 @@
 
             }
         } catch (error) {
-            console.log("ERROR " + error);
+            console.log("ERROR in mqttclient.on(message :" + error);
         }
     });
 
@@ -221,7 +230,11 @@
 
         }); // Join
 
-        client.on('disconnect', () => {});
+        client.on('disconnect', () => {
+            mower.Message = "Mower disconnected";
+            console.log(mower.Message);
+            client.emit('GUI_Message',mower.Message);
+        });
         client.on('mower__action', (mower) => {
             let mowerJson = {};
             let cmd = -1;
@@ -262,7 +275,10 @@
     app.use(express.static(__dirname + '/node_modules'));
 
 
-
+    app.get('/.', function (req, res, next) {
+        console.log("=========================");
+        res.send(404,'Sorry no such entry');
+    });
     app.get('/Liam', function (req, res, next) {
         console.log("=========================");
         res.sendFile(__dirname + '/public/html/index.html');
