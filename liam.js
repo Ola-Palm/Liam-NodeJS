@@ -134,13 +134,15 @@
 
     mqttclient.on('connect', () => {
         console.log("# MQTT is connected");
-
         mqttclient.subscribe('#');
     });
 
     mqttclient.on('message', (topic, message) => {
 
         try {
+            console.log("Topic was" + topic);
+            console.log("New message" + message);
+
             if(topic == "/liam/1/event")
             {
                 cosnole.log("emiiting to gui.");
@@ -148,7 +150,7 @@
                 let temp={
                     Message:message
                 }
-                client.emit('GUI_Message',temp);
+                io.emit('GUI_Message',temp);
             }
             console.dir(message.toString());
             switch (topic) {
