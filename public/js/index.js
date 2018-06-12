@@ -83,7 +83,7 @@
         console.log("info som kommer hit ==");
         console.dir(data);
         let node = document.getElementById('control_message');
-        node.innerHTML = data.Message;
+        node.innerHTML = data.Message.toString();;
     });// GUI_Message
 
     socket.on("battery_avg", function (data) {

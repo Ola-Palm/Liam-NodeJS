@@ -141,12 +141,10 @@
 
         try {
             console.log("Topic was" + topic);
-            console.log("New message" + message);
+            console.log("New message" + message();
 
             if(topic == "/liam/1/event")
             {
-                console.log("emiiting to gui.");
-                console.dir(message);
                 let temp={
                     Message:message
                 }
