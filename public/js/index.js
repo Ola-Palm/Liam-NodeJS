@@ -13,10 +13,12 @@
 
         mowingButton.addEventListener('click', function (e) {
             // push data to server. server komunicate with liam.
+            if(localMower.state ===-1)
+            localMower.state = 3;
             let n = localMower.state = 3 ? 1 : 0;
             let mower = {
                 set_get: 'set',
-                command: 'state',
+                command: '202',
                 value: n
             };
             socket.emit("mower__action", mower);
@@ -50,68 +52,35 @@
     }; // End window.onload
 
     socket.on("connect", function (data) {});
-    socket.on("mower__Init", function (data) {
-        // localMower.state = data.state;
-        console.dir(data);
-        // localMower.state = data.state;
-        var node = document.getElementById("battery_soc_current");
-        node.innerHTML = "Avg Volt:" + data.avgvolt + " out of:" + data.avg_len + " readings";
-        node = document.getElementById("control_looptime");
-        node.innerHTML = "Looptime  is :" + data.looptime;
-        node = document.getElementById('control_state');
-        node.innerHTML = "State is " + data.state;
-        node = document.getElementById("battery_soc_avg");
-        node.innerHTML = "Volt Diff :" + (data.v_max - data.v_min) / 100 + " / Min: " + data.v_min / 100 + "V  / Max :" + data.v_max / 100 + "V";
-
-        node = document.getElementById("control_runtime");
-
-        if (localMower.state != data.state) {
-            localMower.state = data.state;
-
-            if (localMower.state === 0) {
-                node.innerHTML = "Mowing Start time :" + data.state_starttime;
-            } else if (localMower.state === 2) {
-                node.innerHTML = "Docking Start time :" + data.state_starttime;
-            } else if (localMower.state === 3) {
-                node.innerHTML = "Charging Start time :" + data.state_starttime;
-            }
-
-        }
-    });
-
     socket.on("GUI_Message", function (data) {
-        console.log("info som kommer hit ==");
-        console.dir(data);
-        let node = document.getElementById('control_message');
-        node.innerHTML = data.Message.toString();;
-    });// GUI_Message
+        try {
+            console.log("Detta kommer fram!");
+            console.dir(data);
+            // localMower.state = data.state;
+            let node = document.getElementById("control_looptime");
+            node.innerHTML = "Looptime  is :" + data.looptime;
+            node = document.getElementById('control_state');
+            node.innerHTML = "State is " + data.state;
+            if (localMower.state != data.state) {
+                localMower.state = data.state;
+    
+                if (localMower.state === "MOWING") {
+                    node.innerHTML = "Mowing Start time :" + new Date().toLocaleDateString();
+                } else if (localMower.state === "DOCKING") {
+                    node.innerHTML = "Docking Start time :"  + new Date().toLocaleDateString();
+                } else if (localMower.state === "CHARGE") {
+                    node.innerHTML = "Charging Start time :"  + new Date().toLocaleDateString();
+                }
 
-    socket.on("battery_avg", function (data) {
-        console.dir(data);
-        // localMower.state = data.state;
-        var node = document.getElementById("battery_soc_current");
-        node.innerHTML = "Avg Volt:" + data.avgvolt + " out of:" + data.avg_len + " readings";
-        node = document.getElementById("control_looptime");
-        node.innerHTML = "Looptime  is :" + data.looptime;
-        node = document.getElementById('control_state');
-        node.innerHTML = "State is " + data.state;
-        node = document.getElementById("battery_soc_avg");
-        node.innerHTML = "Volt Diff :" + (data.v_max - data.v_min) / 100 + " / Min: " + data.v_min / 100 + "V  / Max :" + data.v_max / 100 + "V";
-
-        node = document.getElementById("control_runtime");
-
-        if (localMower.state != data.state) {
-            localMower.state = data.state;
-
-            if (localMower.state === 0) {
-                node.innerHTML = "Mowing Start time :" + data.state_starttime;
-            } else if (localMower.state === 2) {
-                node.innerHTML = "Docking Start time :" + data.state_starttime;
-            } else if (localMower.state === 3) {
-                node.innerHTML = "Charging Start time :" + data.state_starttime;
             }
-
+            node = document.getElementById('control_message');
+            node.innerHTML = data.message;
+            node = document.getElementById("battery_soc_current");
+            node.innerHTML = "Battery :"+data.battery;    
+        } catch (error) {
+            console.log(error.message)
         }
-    });
+        
+    });// GUI_Message
 
 })()

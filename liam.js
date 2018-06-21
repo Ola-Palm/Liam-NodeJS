@@ -17,13 +17,15 @@
     const http = require('http');
     let mower = {
         'looptime': 0,
+        'battery':-1,
         'avgvolt': 0,
         'v_min': 10000,
         'v_max': 0,
         'state': -1,
         'avg_len': 0,
         'state_starttime' : -1,
-        'Message':''
+        'message':'',
+        'update_time':''
     };
 
     // Server
@@ -140,81 +142,28 @@
     mqttclient.on('message', (topic, message) => {
 
         try {
-            console.log("Topic was" + topic);
-            console.log("New message" + message();
+            var mJson = JSON.parse(message);
 
-            if(topic == "/liam/1/event")
-            {
-                let temp={
-                    Message:message
-                }
-                io.emit('GUI_Message',temp);
-            }
-            console.dir(message.toString());
-            switch (topic) {
-                case "/liam1/event":
-                    let JMessage = JSON.parse(message);
-                    if (mower.state != JMessage.State) {
-                        var d = new Date();
-                        voltAvg.length = 0; // set array to zero
-                        mower.state_starttime = d.toLocaleTimeString();
-                    }
-                    if(JMessage.State === 0)
-                    {
-                        /// Mowing
-                    }
-                    else if (JMessage.State === 1)
-                    {
-                        //Launching
-                    }
-                    else if( JMessage.State === 2)
-                    {
-                        //// Docking
-                    }
-                    else if (JMessage.State === 3) {
-                        /// Chargeing
-                        /**
-                         * Check charge time at least 90 min
-                         * check diff between min and max no more then .5 V
-                         * If true check if it's mowingtime, --> set mowing.
-                         */
-                    }
-                    else if( JMessage.State === 4)
-                    {
-                        //// IDLE
-                    }
-                    if (voltAvg.length >= arrayLen) {
-                        voltAvg.shift();
-                    }
-
-                    voltAvg.push(JMessage.SOC)
-                    let n = 0;
-                    let v = 0;
-                    let current = 0;
-                    mower.v_min = 10000;
-                    mower.v_max = 0;
-                    for (let index = 0; index < voltAvg.length; index++) {
-                        current = voltAvg[index];
-                        v += current
-                        n++;
-                        if (mower.v_min > current)
-                            mower.v_min = current;
-                        if (mower.v_max < current)
-                            mower.v_max = current;
-                    }
-                    let temp = JSON.stringify(mower);
-                    mower.avgvolt = (Math.floor(v / n) / 100);
-                    mower.looptime = JMessage.Looptime;
-                    mower.state = JMessage.State;
-                    mower["avg_len"] = n;
-
-                    if (temp != JSON.stringify(mower))
-                        io.emit('battery_avg', mower);
+            switch (topic.toString().toLowerCase()) {
+                case "/liam/1/event/lastmessage":
+                    mower.message = mJson.message;
+                    break;
+                case "/liam/1/event/battery":
+                    mower.battery = mJson.battery;
+                    break;
+                case "/liam/1/event/state":
+                    mower.state = mJson.state;
+                    break;
+                case "/liam/1/event/looptime":
+                    mower.looptime = mJson.looptime;
                     break;
                 default:
                     break;
-
             }
+            mower.update_time = new Date().toLocaleDateString();
+            console.log("Detta är JSON");
+            console.dir(mJson);
+            io.emit('GUI_Message', mower);
         } catch (error) {
             console.log("ERROR in mqttclient.on(message :" + error);
         }
@@ -226,9 +175,9 @@
     //#region WEBSOCKET CLIENT --> SERVER
     io.on('connection', (client) => {
         console.log('_ Websocket client connected');
-        client.emit('mower__Init', mower);
+        client.emit('GUI_Message', mower);
         client.on('join', (data) => {
-            client.emit('battery_avg', mower);
+            client.emit('GUI_Message', mower);
 
         }); // Join
 
