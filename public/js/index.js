@@ -14,8 +14,9 @@
         mowingButton.addEventListener('click', function (e) {
             // push data to server. server komunicate with liam.
             if(localMower.state ===-1)
-            localMower.state = 3;
-            let n = localMower.state = 3 ? 1 : 0;
+                localMower.state = 3;
+            let n = localMower.state == 3 ? 1 : 0;
+            console.log("Värdet på n == "+ n);
             let mower = {
                 set_get: 'set',
                 command: 'state',
@@ -32,7 +33,7 @@
             let mower = {
                 set_get: 'set',
                 command: 'state',
-                value: 4
+                value: 6
             };
             socket.emit("mower__action", mower);
         });
@@ -54,13 +55,11 @@
     socket.on("connect", function (data) {});
     socket.on("GUI_Message", function (data) {
         try {
-            console.log("Detta kommer fram!");
-            console.dir(data);
             // localMower.state = data.state;
             let node = document.getElementById("control_looptime");
             node.innerHTML = "Looptime  is :" + data.looptime;
             node = document.getElementById('control_state');
-            node.innerHTML = "State is " + data.state;
+            node.innerHTML = "State is " + data.statename;
             if (localMower.state != data.state) {
                 localMower.state = data.state;
     

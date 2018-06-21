@@ -22,6 +22,7 @@
         'v_min': 10000,
         'v_max': 0,
         'state': -1,
+        'statename':'',
         'avg_len': 0,
         'state_starttime' : -1,
         'message':'',
@@ -143,7 +144,6 @@
 
         try {
             var mJson = JSON.parse(message);
-
             switch (topic.toString().toLowerCase()) {
                 case "/liam/1/event/lastmessage":
                     mower.message = mJson.message;
@@ -153,19 +153,27 @@
                     break;
                 case "/liam/1/event/state":
                     mower.state = mJson.state;
+                    mower.statename = mJson.name;
                     break;
                 case "/liam/1/event/looptime":
                     mower.looptime = mJson.looptime;
                     break;
+                case '/liam/1/cmd_resp':
+                if(mJson.state)
+                {
+                    mower.state = mJson.state;
+                    mower.statename = mJson.name;
+                }
+                break;
                 default:
                     break;
             }
             mower.update_time = new Date().toLocaleDateString();
-            console.log("Detta är JSON");
+            console.dir(topic);
             console.dir(mJson);
             io.emit('GUI_Message', mower);
         } catch (error) {
-            console.log("ERROR in mqttclient.on(message :" + error);
+            console.log("ERROR in mqttclient.on(message :" + error + '\n' +"This was the error: "+ message);
         }
     });
 
