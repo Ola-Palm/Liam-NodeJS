@@ -190,6 +190,8 @@
             let mowerJson = {};
             let cmd = -1;
             try {
+                console.log("detta är mower commad");
+                console.log(Setcommands[mower.command]);
                 switch (mower.set_get) {
                     case 'set':
                         console.log('set value');
@@ -199,7 +201,6 @@
                             console.log("Detta gick inte bra. ");
                         mowerJson[0] = cmd;
                         mowerJson[1] = mower.value;
-                        mowerJson[99] = "123";
                         console.dir(mower);
                         break;
                     case 'get':

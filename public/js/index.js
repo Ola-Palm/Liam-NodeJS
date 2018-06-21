@@ -18,7 +18,7 @@
             let n = localMower.state = 3 ? 1 : 0;
             let mower = {
                 set_get: 'set',
-                command: '202',
+                command: 'state',
                 value: n
             };
             socket.emit("mower__action", mower);
