@@ -195,7 +195,7 @@
                 switch (mower.set_get) {
                     case 'set':
                         console.log('set value');
-                        topic = '/liam1/cmd/set';
+                        topic = '/liam/1/cmd/set';
                         cmd = Setcommands[mower.command];
                         if (cmd === -1)
                             console.log("Detta gick inte bra. ");
